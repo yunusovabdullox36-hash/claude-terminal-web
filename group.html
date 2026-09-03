@@ -103,6 +103,8 @@ button.go:disabled{opacity:.5}
   <div class="stat"><b id="sCost">–</b><span>bugun xarajat</span></div>
 </div>
 
+<div id="hermes" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:var(--ink-2);display:none"></div>
+
 <div class="tabs">
   <div class="tab on" data-p="team">Jamoa</div>
   <div class="tab" data-p="give">Vazifa ber</div>
@@ -195,6 +197,18 @@ async function load(){
   });
 
   drawChips();
+
+  // Hermes loop holati
+  try{
+    const h=await (await api("/api/hermes")).json();
+    const el=$("#hermes");
+    if(h.error){ el.style.display="block"; el.textContent="Hermes: "+h.error; }
+    else {
+      el.style.display="block";
+      const t=h.today||{};
+      el.innerHTML=`<b style="color:var(--ink)">Hermes loop</b> — tsikl ${h.cycle}${h.paused?" · <span style=color:var(--warn)>PAUZA</span>":""} · bugun ${t.count||0}/${(h.caps||{}).perDay} ish · ${(t.spendUsd||0).toFixed(2)}${h.lastResult?" · "+h.lastResult:""}`;
+    }
+  }catch{}
 
   $("#p-feed").innerHTML = S.feed.length ? S.feed.map(f => `
     <div class="fd" style="border-left-color:${f.color}">
