@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="uz"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Korxona</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#17110E; --panel:#1F1815; --panel-2:#261D19; --line:#3A2E28;
+  --ink:#EDE6DF; --ink-2:#B8ABA1; --slate:#8A7C73;
+  --clay:#D97757; --clay-dim:#8C4C36; --good:#5FBF8F; --warn:#E0A458;
+  --ui:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+:root[data-theme="light"]{
+  --bg:#F7F3EF; --panel:#FFFDFB; --panel-2:#F1EAE4; --line:#DED2C8;
+  --ink:#241C17; --ink-2:#5B4E46; --slate:#8A7C73;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--ui);
+     padding:12px 12px calc(24px + env(safe-area-inset-bottom));max-width:820px;margin:0 auto}
+
+/* sarlavha */
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.spark{width:26px;height:26px;flex:none;animation:spin 22s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spark{animation:none}}
+h1{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.sub{color:var(--slate);font:11px/1 var(--mono);margin-top:3px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;vertical-align:1px}
+
+/* umumiy kartochkalar */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:19px;font-weight:600;letter-spacing:-.02em}
+.stat span{color:var(--slate);font:10px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.08em}
+
+/* tablar */
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:7px 13px;border-radius:999px;border:1px solid var(--line);
+     background:var(--panel);color:var(--ink-2);font-size:13px;cursor:pointer}
+.tab.on{background:var(--clay);border-color:var(--clay);color:#fff}
+.panel{display:none}.panel.on{display:block}
+
+/* agentlar */
+.ag{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:11px 12px;margin-bottom:8px;cursor:pointer}
+.ag:active{background:var(--panel-2)}
+.em{width:36px;height:36px;flex:none;border-radius:50%;display:grid;place-items:center;
+    font:17px/1 "Times New Roman",Georgia,serif;border:1.5px solid currentColor}
+.ag .nm{font-weight:600;font-size:14px}
+.ag .ti{color:var(--slate);font-size:12px;margin-top:1px}
+.ag .rt{margin-left:auto;text-align:right;font:10px/1.5 var(--mono);color:var(--slate);flex:none}
+.pill{display:inline-block;padding:1px 7px;border-radius:999px;font:10px/1.6 var(--mono)}
+.pill.on{background:rgba(95,191,143,.15);color:var(--good)}
+.pill.off{background:rgba(138,124,115,.15);color:var(--slate)}
+
+/* vazifa berish */
+.give{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}
+.give h3{font-size:13px;margin-bottom:9px;color:var(--ink-2);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel-2);
+      font-size:12px;cursor:pointer;color:var(--ink-2)}
+.chip.on{border-color:currentColor;font-weight:600}
+textarea{width:100%;min-height:78px;resize:vertical;background:var(--panel-2);color:var(--ink);
+         border:1px solid var(--line);border-radius:10px;padding:10px;font:14px var(--ui);outline:none}
+textarea:focus{border-color:var(--clay)}
+.row{display:flex;gap:8px;align-items:center;margin-top:9px}
+button.go{flex:1;background:var(--clay);color:#fff;border:0;border-radius:10px;padding:11px;
+          font:600 14px var(--ui);cursor:pointer}
+button.go:disabled{opacity:.5}
+.note{color:var(--slate);font-size:11px;margin-top:8px;line-height:1.5}
+
+/* oqim */
+.fd{background:var(--panel);border:1px solid var(--line);border-left-width:3px;
+    border-radius:10px;padding:10px 12px;margin-bottom:7px}
+.fd .h{display:flex;gap:8px;align-items:baseline;font-size:12px}
+.fd .h b{font-weight:600}
+.fd .h i{margin-left:auto;font:10px var(--mono);color:var(--slate);font-style:normal}
+.fd .t{font-size:13px;margin-top:5px}
+.fd .r{color:var(--ink-2);font-size:12px;margin-top:4px;
+       display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.empty{color:var(--slate);text-align:center;padding:26px 10px;font-size:13px}
+
+/* natija */
+#out{white-space:pre-wrap;background:var(--panel-2);border:1px solid var(--line);
+     border-radius:10px;padding:11px;margin-top:10px;font-size:13px;display:none}
+</style>
+</head><body>
+
+<div class="top">
+  <svg class="spark" viewBox="-50 -50 100 100" aria-hidden="true"><g id="sp"></g></svg>
+  <div>
+    <h1>Korxona</h1>
+    <div class="sub" id="sub">yuklanyapti…</div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><b id="sAg">–</b><span>agent</span></div>
+  <div class="stat"><b id="sRun">–</b><span>bugun ish</span></div>
+  <div class="stat"><b id="sCost">–</b><span>bugun xarajat</span></div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" data-p="team">Jamoa</div>
+  <div class="tab" data-p="give">Vazifa ber</div>
+  <div class="tab" data-p="feed">Bugun</div>
+</div>
+
+<div class="panel on" id="p-team"></div>
+
+<div class="panel" id="p-give">
+  <div class="give">
+    <h3>Kimga?</h3>
+    <div class="chips" id="chips"></div>
+    <textarea id="task" placeholder="Vazifani yoz — masalan: raqobatchilarni tekshirib qisqa xulosa ber"></textarea>
+    <div class="row"><button class="go" id="send">Yuborish</button></div>
+    <div class="note" id="note"></div>
+    <div id="out"></div>
+  </div>
+</div>
+
+<div class="panel" id="p-feed"></div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+tg?.ready(); tg?.expand();
+const forced = new URLSearchParams(location.search).get("theme");
+document.documentElement.dataset.theme =
+  forced || (tg?.initData && tg.colorScheme) ||
+  (matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark");
+
+/* Claude spark */
+document.getElementById("sp").innerHTML = Array.from({length:12},(_,i)=>{
+  const a=i*Math.PI/6, c=Math.cos(a), s=Math.sin(a);
+  return `<line x1="${(c*13).toFixed(2)}" y1="${(s*13).toFixed(2)}" x2="${(c*44).toFixed(2)}" y2="${(s*44).toFixed(2)}" stroke="#D97757" stroke-width="7.5" stroke-linecap="round"/>`;
+}).join("");
+
+/* ── backend ───────────────────────────────────────────────────────────
+   Bu sahifa GitHub Pages'da turadi, backend esa tunnelda — nisbiy "/api/…"
+   ishlamaydi. Joriy tunnel manzilini gistdan olamiz (Claude Terminal ham
+   xuddi shunday qiladi). Auth: Telegram initData HMAC. */
+const DISCOVERY = "https://gist.githubusercontent.com/yunusovabdullox36-hash/fa2157b9a66b944ccccee1bbd2b30a0b/raw/ct-tunnel.txt";
+const local = location.hostname === "127.0.0.1" || location.hostname === "localhost";
+let _base = null;
+async function base(){
+  if (local || /\.trycloudflare\.com$/.test(location.hostname)) return "";
+  if (_base !== null) return _base;
+  try{
+    const u = (await (await fetch(DISCOVERY + "?t=" + Date.now())).text()).trim();
+    if (u.startsWith("https://")) return (_base = u.replace(/\/$/, ""));
+  }catch{}
+  return "";
+}
+async function api(p, opt = {}){
+  return fetch((await base()) + p, {...opt,
+    headers: {...(opt.headers||{}), "X-Init-Data": tg?.initData || ""}});
+}
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s??"").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+let S = null, pick = null;
+
+async function load(){
+  try{
+    S = await (await api("/api/korxona")).json();
+  }catch(e){
+    $("#sub").textContent = "backend ulanmadi";
+    $("#p-team").innerHTML = `<div class="empty">Backend javob bermadi.<br>Noutbuk yoqiqmi va tunnel ishlayaptimi?</div>`;
+    return;
+  }
+  const on = S.agents.filter(a => a.running).length;
+  $("#sub").innerHTML = `<span class="dot" style="background:${S.bridgeUp?"var(--good)":"var(--slate)"}"></span> ${on}/${S.agents.length} ishlayapti · bir vaqtda ${S.maxConcurrent}`;
+  $("#sAg").textContent = `${on}/${S.agents.length}`;
+  $("#sRun").textContent = S.today.runs;
+  $("#sCost").textContent = "$" + S.today.cost.toFixed(2);
+
+  $("#p-team").innerHTML = S.agents.map(a => `
+    <div class="ag" data-id="${a.id}">
+      <div class="em" style="color:${a.color}">${esc(a.emblem)}</div>
+      <div style="min-width:0">
+        <div class="nm">${esc(a.name)}</div>
+        <div class="ti">${esc(a.title||"")}</div>
+      </div>
+      <div class="rt">
+        <span class="pill ${a.running?"on":"off"}">${a.running?"tayyor":"o'chiq"}</span><br>
+        ${a.today.runs ? `bugun ${a.today.runs} · $${a.today.cost.toFixed(3)}` : "bugun ish yo'q"}
+      </div>
+    </div>`).join("");
+  document.querySelectorAll(".ag").forEach(el => el.onclick = () => {
+    pick = el.dataset.id; drawChips(); tab("give"); $("#task").focus();
+  });
+
+  drawChips();
+
+  $("#p-feed").innerHTML = S.feed.length ? S.feed.map(f => `
+    <div class="fd" style="border-left-color:${f.color}">
+      <div class="h"><b style="color:${f.color}">${esc(f.emblem)} ${esc(f.name)}</b>
+        <i>${esc(f.at)}${f.cost?" · $"+f.cost.toFixed(3):""}</i></div>
+      <div class="t">${esc(f.task)}</div>
+      <div class="r">${esc(f.result)}</div>
+    </div>`).join("")
+    : `<div class="empty">Bugun hali hech kim ishlamadi.</div>`;
+}
+
+function drawChips(){
+  $("#chips").innerHTML = S.agents.map(a => `
+    <span class="chip ${pick===a.id?"on":""}" data-id="${a.id}"
+          style="${pick===a.id?`color:${a.color};background:${a.color}22`:""}">${esc(a.emblem)} ${esc(a.name)}</span>`).join("");
+  document.querySelectorAll(".chip").forEach(el => el.onclick = () => { pick = el.dataset.id; drawChips(); });
+  const a = S.agents.find(x => x.id === pick);
+  $("#note").textContent = a ? (a.role || "").slice(0, 220) : "Avval agentni tanlang.";
+}
+
+function tab(name){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.p === name));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === "p-" + name));
+}
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => tab(t.dataset.p));
+
+$("#send").onclick = async () => {
+  const task = $("#task").value.trim();
+  if (!pick) return tg?.showAlert?.("Avval agentni tanlang") ?? alert("Avval agentni tanlang");
+  if (!task) return;
+  const b = $("#send"), out = $("#out");
+  b.disabled = true; b.textContent = "ishlayapti…";
+  out.style.display = "block"; out.textContent = "Agent ishga tushdi. Bu 1-8 daqiqa olishi mumkin…";
+  try{
+    const r = await (await api("/api/agent/run", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ id: pick, task })
+    })).json();
+    out.textContent = r.error ? ("Xato: " + r.error) : (r.text || "(bo'sh javob)");
+    if (!r.error) { $("#task").value = ""; load(); }
+  }catch(e){ out.textContent = "Xato: " + e.message; }
+  b.disabled = false; b.textContent = "Yuborish";
+};
+
+load();
+setInterval(() => { if (document.visibilityState === "visible") load(); }, 30000);
+</script>
+</body></html>
