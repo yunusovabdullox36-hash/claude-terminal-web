@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Claude Terminal</title>
-<script src="https://telegram.org/js/telegram-web-app.js?v=1788592851310"></script>
+<script src="https://telegram.org/js/telegram-web-app.js?v=1788655949740"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -162,7 +162,29 @@
   .kx-chips button{padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--slate);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
   .kx-chips button.on{background:var(--clay);border-color:var(--clay);color:#fff}
   .kx-dept{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);margin:16px 0 7px;font-weight:600}
-  .kx-a{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px 12px;margin-bottom:7px}
+  .kx-a{position:relative;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px 12px 10px 56px;margin-bottom:7px;min-height:56px}
+  /* agentning o'z avatari — make-agent-avatars.cjs, /agentpic/<id>.png */
+  .kx-apic{position:absolute;left:10px;top:10px;width:36px;height:36px;border-radius:9px;object-fit:cover}
+  /* bo'limni mini-webdan ishga tushirish (guruhlar o'chirilgach boshqaruv shu yerda) */
+  .kx-run{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:10px;margin-bottom:10px}
+  .kx-run textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+    color:var(--ink);font:inherit;padding:9px 11px;resize:vertical;min-height:44px}
+  .kx-run-bar{display:flex;align-items:center;gap:9px;margin-top:8px;flex-wrap:wrap}
+  .kx-run-bar select{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+    color:var(--ink);font:inherit;padding:6px 9px}
+  .kx-chk{display:flex;align-items:center;gap:5px;color:var(--slate);font-size:12.5px}
+  .kx-hint{color:var(--slate);font-size:12px}
+  .kx-run-bar .spring{flex:1}
+  .kx-run-bar button{background:var(--accent,#d97757);color:#fff;border:0;border-radius:8px;
+    padding:7px 14px;font:inherit;font-weight:600;cursor:pointer}
+  .kx-run-bar button[disabled]{opacity:.55;cursor:default}
+  .kx-job{margin-top:9px;border-top:1px solid var(--line);padding-top:9px;font-size:12.5px}
+  .kx-job .st{color:var(--slate);white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;line-height:1.5}
+  .kx-job .ag{border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-top:7px;background:var(--panel-2)}
+  .kx-job .ag h4{font-size:13px;margin:0 0 4px}
+  .kx-job .ag code{font-size:11px;color:var(--slate)}
+  .kx-job .ag .tx{white-space:pre-wrap;line-height:1.5;margin-top:4px}
+  .kx-job .sy{border:1px solid var(--accent,#d97757);border-radius:9px;padding:9px 11px;margin-top:9px}
   .kx-a .h{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
   .kx-a .t{font-weight:600;font-size:13.5px}
   .kx-a code{font-size:11px;color:var(--slate);background:var(--panel-2);padding:1px 5px;border-radius:5px}
@@ -330,6 +352,17 @@
     <div class="panel" id="p-korxona" hidden>
       <div class="p-head"><button class="icon-btn p-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12"/></svg></button><h2>Korxona</h2></div>
       <div class="p-body">
+        <div class="kx-run">
+          <textarea id="kxTask" rows="2" placeholder="Bo'limga topshiriq: nima qilinsin?"></textarea>
+          <div class="kx-run-bar">
+            <select id="kxRunDept"></select>
+            <label class="kx-chk"><input type="checkbox" id="kxAll"> hamma agent</label>
+            <span class="spring"></span>
+            <span class="kx-hint" id="kxHint"></span>
+            <button id="kxGo">Ishga tushir</button>
+          </div>
+          <div id="kxJob" class="kx-job" hidden></div>
+        </div>
         <input id="kxQ" placeholder="qidir: video, narx, qo'ng'iroq…" style="width:100%;padding:9px 11px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;color:var(--ink);font:inherit;margin-bottom:8px">
         <div id="kxDepts" class="kx-chips"></div>
         <div id="kxBody"></div>
@@ -361,6 +394,6 @@
 <div class="sheet" id="sheet"></div>
 <input type="file" id="fileInput" accept="image/*" hidden>
 
-<script type="module" src="app.js?v=1788592851310"></script>
+<script type="module" src="app.js?v=1788655949740"></script>
 </body>
 </html>
